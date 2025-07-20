@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1753046981 source:d:\github\ciencia-da-computacao\logica de computacao\pedra papel ou tesoura\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+

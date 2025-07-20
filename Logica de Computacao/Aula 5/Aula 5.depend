@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1753044978 source:d:\github\ciencia-da-computacao\logica de computacao\aula 5\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+
