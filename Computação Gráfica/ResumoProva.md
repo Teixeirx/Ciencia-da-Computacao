@@ -1,4 +1,4 @@
-# 📚 Revisão – Computação Gráfica (Prova 01)
+# 📚 Revisão – Computação Gráfica
 
 ## 🧠 1. Transformações Geométricas
 Transformações são usadas para modificar objetos no espaço 2D ou 3D.
@@ -70,7 +70,7 @@ Gira o objeto em torno de um eixo (X, Y ou Z).
 
 ---
 
-## ✂️ 6. Clipping (Recorte)
+## ✂️ 6. Clipping
 Processo de remover partes que não aparecem na tela.
 
 ### Para que serve:
@@ -122,17 +122,3 @@ Etapas para renderizar um objeto:
 - Usada em jogos e gráficos realistas
 
 ---
-
-## 🧮 11. Exercícios Práticos (ESSENCIAL)
-Você precisa saber:
-
-- Montar matrizes:
-  - Translação
-  - Escala
-  - Rotação
-
-- Multiplicar matriz por ponto:
-P' = M × P
-
-
-- Calcular novo ponto após transformações
