@@ -1,0 +1,112 @@
+﻿=== PAGE 1 ===
+├ürea: Ci├¬ncias Tecnol├│gicas 
+Curso: Sistemas de Informa├º├úo 
+Disciplina: Programa├º├úo Orientada a Objetos 
+Professor: Rafael Bisogno 
+Avalia├º├úo TRABALHO FINAL 
+ 
+ 
+ 
+Diretrizes 
+para 
+o 
+Trabalho 
+Final: 
+Programa├º├úo Orientada a Objetos em 
+Java 
+ 
+Objetivo: Este trabalho final tem como objetivo consolidar os conhecimentos adquiridos ao 
+longo do semestre. Voc├¬ deve projetar e desenvolver um sistema em Java que resolva um 
+problema do mundo real, aplicando rigorosamente os pilares e conceitos fundamentais da 
+Programa├º├úo Orientada a Objetos (POO). 
+ 
+Tema do Projeto: Livre. Voc├¬ pode desenvolver um sistema de gerenciamento (ex: 
+biblioteca, cl├¡nica m├®dica, loja, gest├úo esportiva, etc.), um pequeno jogo baseado em texto, 
+ou outra aplica├º├úo aprovada previamente. O foco n├úo ├® a complexidade do tema, mas sim a 
+correta arquitetura e aplica├º├úo da POO. 
+ 
+Pr├®-requisitos Obrigat├│rios 
+O projeto deve, obrigatoriamente, contemplar e justificar o uso dos seguintes elementos: 
+1. Classes, Objetos e Atributos 
+ÔùÅÔÇï Requisito: O sistema deve possuir entidades bem definidas que modelem o 
+problema escolhido. 
+ÔùÅÔÇï Aplica├º├úo: Cria├º├úo de classes com coes├úo, instancia├º├úo de m├║ltiplos objetos no 
+fluxo principal de execu├º├úo (main) e defini├º├úo de atributos com tipos de dados 
+adequados. 
+2. Construtores 
+ÔùÅÔÇï Requisito: Os objetos devem ser inicializados em estados v├ílidos. 
+ÔùÅÔÇï Aplica├º├úo: Implementa├º├úo de construtores padr├úo e construtores parametrizados. 
+Pelo menos uma classe deve demonstrar a sobrecarga de construtores (m├║ltiplas 
+formas de inicializar o mesmo tipo de objeto). 
+3. Encapsulamento e Modificadores de Acesso 
+ÔùÅÔÇï Requisito: O estado interno dos objetos deve ser protegido contra modifica├º├Áes 
+indevidas. 
+ÔùÅÔÇï Aplica├º├úo: Uso estrito de modificadores de acesso (private, protected, public). O 
+acesso aos atributos deve ser feito por meio de m├®todos getters e setters, ou 
+atrav├®s de m├®todos de neg├│cio que validem as informa├º├Áes antes de alterar o 
+estado do objeto. 
+4. Heran├ºa 
+ÔùÅÔÇï Requisito: 
+O 
+sistema 
+deve 
+demonstrar 
+reaproveitamento 
+de 
+c├│digo 
+e 
+especializa├º├úo de comportamento. 
+ÔùÅÔÇï Aplica├º├úo: Cria├º├úo de pelo menos uma hierarquia de classes. Deve ficar claro o 
+relacionamento "├ë UM" (ex: Professor ├® um Funcionario). 
+
+=== PAGE 2 ===
+├ürea: Ci├¬ncias Tecnol├│gicas 
+Curso: Sistemas de Informa├º├úo 
+Disciplina: Programa├º├úo Orientada a Objetos 
+Professor: Rafael Bisogno 
+Avalia├º├úo TRABALHO FINAL 
+ 
+ 
+ 
+5. Polimorfismo 
+ÔùÅÔÇï Requisito: Objetos de tipos diferentes devem poder ser tratados de forma uniforme. 
+ÔùÅÔÇï Aplica├º├úo: Sobrescrita (Override): Subclasses devem reescrever m├®todos da 
+superclasse para comportamentos espec├¡ficos. 
+ÔùïÔÇï Polimorfismo de Inclus├úo: Cole├º├Áes (como ArrayList) ou par├ómetros de 
+m├®todos devem utilizar o tipo da superclasse para interagir com inst├óncias 
+das subclasses. 
+6. Classes Abstratas e Interfaces 
+ÔùÅÔÇï Requisito: Defini├º├úo de contratos e abstra├º├Áes de alto n├¡vel. 
+ÔùÅÔÇï Aplica├º├úo: 
+ÔùïÔÇï No m├¡nimo uma Interface, definindo um contrato de m├®todos que devem ser 
+obrigatoriamente implementados por classes distintas. 
+ÔùïÔÇï No m├¡nimo uma Classe Abstrata, servindo como base conceitual que n├úo 
+pode ser instanciada diretamente, contendo pelo menos um m├®todo abstrato. 
+7. Tratamento de Exce├º├Áes 
+ÔùÅÔÇï Requisito: O sistema deve ser tolerante a falhas e tratar condi├º├Áes anormais de 
+maneira satisfat├│ria. 
+ÔùÅÔÇï Aplica├º├úo: Uso de blocos try-catch-finally para capturar exce├º├Áes previs├¡veis (como 
+erros de entrada do usu├írio ou falhas de convers├úo). Al├®m disso, o grupo deve criar 
+e lan├ºar pelo menos uma exce├º├úo customizada (ex: SaldoInsuficienteException 
+ou IdadeInvalidaException) para proteger as regras de neg├│cio. 
+Entreg├íveis 
+1.ÔÇï C├│digo Fonte: Projeto completo exportado ou link do reposit├│rio (GitHub/GitLab). O 
+c├│digo deve estar indentado, organizado em pacotes l├│gicos e devidamente 
+comentado. 
+2.ÔÇï Documenta├º├úo (Breve): Um documento (PDF ou README) contendo: 
+ÔùïÔÇï O tema e a descri├º├úo do sistema. 
+ÔùïÔÇï Um mapeamento de onde cada um dos 7 pr├®-requisitos foi utilizado no 
+c├│digo (ex: "A Heran├ºa foi aplicada no pacote models, onde a classe 
+ContaCorrente herda da classe abstrata Conta"). 
+3.ÔÇï Apresenta├º├úo: Apresenta├º├úo visual (Ex. PowerPoint) e defesa oral do projeto, 
+explicar a arquitetura escolhida e responder a perguntas sobre as decis├Áes de 
+design baseadas em POO. 
+Crit├®rios de Avalia├º├úo 
+ÔùÅÔÇï Completude (40%): Todos os 7 requisitos obrigat├│rios foram implementados de 
+forma funcional? 
+ÔùÅÔÇï Qualidade e Sem├óntica da POO (40%): O encapsulamento faz sentido? A heran├ºa 
+foi usada corretamente ou for├ºada? O polimorfismo reduziu o acoplamento? 
+ÔùÅÔÇï Organiza├º├úo e Boas Pr├íticas (20%): Nomenclatura adequada (padr├úo CamelCase 
+para Java), c├│digo limpo e clareza na apresenta├º├úo. 
+ 
+
