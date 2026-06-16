@@ -68,21 +68,6 @@ public class Matricula {
         return !LocalDate.now().isAfter(dataVencimento);
     }
 
-    /**
-     * Exibe informações completas da matrícula no console.
-     */
-    public void exibirInfo() {
-        System.out.println("┌──────────────────────────── MATRÍCULA ─────────────────────────┐");
-        System.out.printf ("│ Matrícula Nº %-4d                                               │%n", id);
-        System.out.printf ("│ Aluno     : %-48s│%n", aluno.getNome());
-        System.out.printf ("│ Plano     : %-48s│%n", plano.getNome() + " (R$ " + String.format("%.2f", plano.getPreco()) + "/mês)");
-        System.out.printf ("│ Instrutor : %-48s│%n", instrutor != null ? instrutor.getNome() : "Sem instrutor");
-        System.out.printf ("│ Início    : %-48s│%n", dataInicio.format(FORMATTER));
-        System.out.printf ("│ Vencimento: %-48s│%n", dataVencimento.format(FORMATTER));
-        System.out.printf ("│ Pagamento : %-48s│%n", pagamentoEmDia ? "Em dia ✓" : "EM ATRASO ✗");
-        System.out.println("└─────────────────────────────────────────────────────────────────┘");
-    }
-
     // -----------------------------------------------------------------------
     // Getters e Setters — Requisito 3 (Encapsulamento)
     // -----------------------------------------------------------------------

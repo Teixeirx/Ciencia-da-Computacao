@@ -2,7 +2,6 @@ package fitmanagerpro.services;
 
 import fitmanagerpro.exceptions.MatriculaInvalidaException;
 import fitmanagerpro.exceptions.PlanoInvalidoException;
-import fitmanagerpro.interfaces.Relatorio;
 import fitmanagerpro.models.*;
 
 import java.util.ArrayList;
@@ -13,9 +12,8 @@ import java.util.List;
  *
  * Requisito 5 — Polimorfismo de Inclusão: usa ArrayList<Pessoa> para tratar
  *               Alunos e Instrutores de forma uniforme pelo tipo da superclasse.
- * Requisito 6 — Implementa a interface Relatorio, cumprindo o contrato definido.
  */
-public class AcademiaService implements Relatorio {
+public class AcademiaService {
 
     // Requisito 5 — coleção polimórfica: armazena Aluno e Instrutor como Pessoa
     private final List<Pessoa>    pessoas;
@@ -46,7 +44,6 @@ public class AcademiaService implements Relatorio {
      */
     public void cadastrarAluno(Aluno aluno) {
         pessoas.add(aluno); // ArrayList<Pessoa> recebe Aluno — Requisito 5
-        System.out.println("\n✔ Aluno \"" + aluno.getNome() + "\" cadastrado com sucesso!");
     }
 
     /**
@@ -88,7 +85,6 @@ public class AcademiaService implements Relatorio {
      */
     public void cadastrarInstrutor(Instrutor instrutor) {
         pessoas.add(instrutor); // ArrayList<Pessoa> recebe Instrutor — Requisito 5
-        System.out.println("\n✔ Instrutor \"" + instrutor.getNome() + "\" cadastrado com sucesso!");
     }
 
     /**
@@ -130,7 +126,6 @@ public class AcademiaService implements Relatorio {
      */
     public void adicionarPlano(Plano plano) {
         planos.add(plano);
-        System.out.println("\n✔ Plano \"" + plano.getNome() + "\" adicionado ao catálogo!");
     }
 
     /**
@@ -181,7 +176,6 @@ public class AcademiaService implements Relatorio {
 
         matriculas.add(matricula);
         aluno.setAtivo(true);
-        System.out.println("\n✔ Matrícula realizada com sucesso! (ID: " + matricula.getId() + ")");
     }
 
     public List<Matricula> listarMatriculas() { return matriculas; }
@@ -213,62 +207,9 @@ public class AcademiaService implements Relatorio {
     public void registrarPagamento(Matricula matricula, double valor, String formaPagamento) {
         Pagamento pagamento = new Pagamento(matricula, valor, formaPagamento);
         pagamentos.add(pagamento);
-        System.out.println("\n✔ Pagamento registrado! (ID: " + pagamento.getId() + ")");
     }
 
     public List<Pagamento> listarPagamentos() { return pagamentos; }
-
-    // -----------------------------------------------------------------------
-    // Implementação da Interface Relatorio — Requisito 6
-    // -----------------------------------------------------------------------
-
-    /**
-     * Gera e exibe o relatório geral da academia no console.
-     * Requisito 6 — Implementação do método da interface Relatorio.
-     */
-    @Override
-    public void gerarRelatorioGeral() {
-        List<Aluno>    alunos     = listarAlunos();
-        List<Instrutor> instrutores = listarInstrutores();
-
-        long ativos       = alunos.stream().filter(Aluno::isAtivo).count();
-        long inadimplentes = matriculas.stream().filter(m -> !m.isPagamentoEmDia()).count();
-        double receitaEstimada = planos.stream().mapToDouble(Plano::getPreco).sum()
-                * ativos / Math.max(planos.size(), 1);
-
-        System.out.println("\n╔═══════════════════════════════════════════════════════════════════╗");
-        System.out.println("║              RELATÓRIO GERAL — FIT MANAGER PRO                   ║");
-        System.out.println("╠═══════════════════════════════════════════════════════════════════╣");
-        System.out.printf ("║  Total de alunos cadastrados : %-35d║%n", alunos.size());
-        System.out.printf ("║  Alunos ativos               : %-35d║%n", ativos);
-        System.out.printf ("║  Total de instrutores        : %-35d║%n", instrutores.size());
-        System.out.printf ("║  Total de matrículas         : %-35d║%n", matriculas.size());
-        System.out.printf ("║  Matrículas com pgto em atraso: %-34d║%n", inadimplentes);
-        System.out.printf ("║  Planos no catálogo          : %-35d║%n", planos.size());
-        System.out.printf ("║  Receita mensal estimada     : R$ %-32s║%n",
-                String.format("%.2f", calcularReceitaMensal()));
-        System.out.println("╚═══════════════════════════════════════════════════════════════════╝");
-    }
-
-    /**
-     * Gera relatório de um aluno específico por nome ou ID.
-     * Requisito 6 — Implementação do método da interface Relatorio.
-     */
-    @Override
-    public void gerarRelatorioItem(String identificador) {
-        System.out.println("\n─── Matrícula(s) do aluno: " + identificador + " ───");
-        boolean encontrou = false;
-        for (Matricula m : matriculas) {
-            if (m.getAluno().getNome().equalsIgnoreCase(identificador)
-                    || String.valueOf(m.getAluno().getId()).equals(identificador)) {
-                m.exibirInfo();
-                encontrou = true;
-            }
-        }
-        if (!encontrou) {
-            System.out.println("Nenhuma matrícula encontrada para: " + identificador);
-        }
-    }
 
     // -----------------------------------------------------------------------
     // Utilitários
@@ -287,21 +228,5 @@ public class AcademiaService implements Relatorio {
             }
         }
         return total;
-    }
-
-    /**
-     * Exibe todas as pessoas do sistema usando polimorfismo.
-     * Requisito 5 — chama exibirInfo() sobre ArrayList<Pessoa>; Java decide em
-     *               tempo de execução qual implementação usar (Aluno ou Instrutor).
-     */
-    public void exibirTodasAsPessoas() {
-        if (pessoas.isEmpty()) {
-            System.out.println("Nenhuma pessoa cadastrada.");
-            return;
-        }
-        for (Pessoa p : pessoas) {
-            p.exibirInfo(); // despacho polimórfico — Requisito 5
-            System.out.println();
-        }
     }
 }

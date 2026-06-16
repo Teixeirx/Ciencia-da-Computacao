@@ -3,8 +3,7 @@ package fitmanagerpro.models;
 /**
  * Representa um instrutor da academia.
  * Requisito 4 — Herança: Instrutor É UMA Pessoa (extends Pessoa).
- * Requisito 5 — Polimorfismo: sobrescreve exibirInfo() da superclasse com
- *               informações específicas de instrutor (especialidade, CREF).
+ * Requisito 5 — Polimorfismo: sobrescreve toString() com informações específicas.
  */
 public class Instrutor extends Pessoa {
 
@@ -46,24 +45,6 @@ public class Instrutor extends Pessoa {
         this.id            = contadorId++;
         this.especialidade = especialidade;
         this.cref          = cref;
-    }
-
-    // -----------------------------------------------------------------------
-    // Método abstrato implementado — Requisito 5 (Polimorfismo / Override)
-    // -----------------------------------------------------------------------
-
-    /**
-     * Exibe as informações detalhadas do instrutor no console.
-     * Requisito 5 — Sobrescrita (@Override) com comportamento específico de Instrutor.
-     */
-    @Override
-    public void exibirInfo() {
-        System.out.println("┌─────────────────────────── INSTRUTOR ──────────────────────────┐");
-        System.out.printf ("│ ID: %-3d                                                         │%n", id);
-        System.out.printf ("│ %s%n", super.toString());
-        System.out.printf ("│ Especialidade: %-46s│%n", especialidade);
-        System.out.printf ("│ CREF         : %-46s│%n", cref);
-        System.out.println("└─────────────────────────────────────────────────────────────────┘");
     }
 
     // -----------------------------------------------------------------------

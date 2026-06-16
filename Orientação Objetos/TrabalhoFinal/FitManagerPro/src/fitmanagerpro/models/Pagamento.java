@@ -44,24 +44,6 @@ public class Pagamento {
     }
 
     // -----------------------------------------------------------------------
-    // Métodos de negócio
-    // -----------------------------------------------------------------------
-
-    /**
-     * Exibe os detalhes do pagamento no console.
-     */
-    public void exibirInfo() {
-        System.out.println("┌──────────────────────────── PAGAMENTO ─────────────────────────┐");
-        System.out.printf ("│ Pagamento Nº %-4d                                               │%n", id);
-        System.out.printf ("│ Aluno        : %-46s│%n", matricula.getAluno().getNome());
-        System.out.printf ("│ Matrícula Nº : %-46s│%n", matricula.getId());
-        System.out.printf ("│ Valor        : R$ %-43s│%n", String.format("%.2f", valor));
-        System.out.printf ("│ Forma        : %-46s│%n", formaPagamento);
-        System.out.printf ("│ Data         : %-46s│%n", dataPagamento.format(FORMATTER));
-        System.out.println("└─────────────────────────────────────────────────────────────────┘");
-    }
-
-    // -----------------------------------------------------------------------
     // Getters e Setters — Requisito 3 (Encapsulamento)
     // -----------------------------------------------------------------------
 

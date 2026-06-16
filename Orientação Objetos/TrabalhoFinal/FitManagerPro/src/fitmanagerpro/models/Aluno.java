@@ -49,24 +49,6 @@ public class Aluno extends Pessoa {
     }
 
     // -----------------------------------------------------------------------
-    // Método abstrato implementado — Requisito 5 (Polimorfismo / Override)
-    // -----------------------------------------------------------------------
-
-    /**
-     * Exibe as informações detalhadas do aluno no console.
-     * Requisito 5 — Sobrescrita (@Override) do método abstrato de Pessoa.
-     */
-    @Override
-    public void exibirInfo() {
-        System.out.println("┌─────────────────────────── ALUNO ──────────────────────────────┐");
-        System.out.printf ("│ ID: %-3d                                                         │%n", id);
-        System.out.printf ("│ %s%n", toString());
-        System.out.printf ("│ Objetivo : %-50s│%n", objetivo);
-        System.out.printf ("│ Status   : %-50s│%n", ativo ? "Ativo" : "Inativo");
-        System.out.println("└─────────────────────────────────────────────────────────────────┘");
-    }
-
-    // -----------------------------------------------------------------------
     // Getters e Setters — Requisito 3 (Encapsulamento)
     // -----------------------------------------------------------------------
 

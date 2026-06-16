@@ -3,8 +3,7 @@ package fitmanagerpro.models;
 /**
  * Classe ABSTRATA que representa uma pessoa no sistema.
  * Requisito 4 — Base da hierarquia de herança: Aluno e Instrutor estendem esta classe.
- * Requisito 6 — Classe abstrata: não pode ser instanciada diretamente; obriga
- *               subclasses a implementar o método abstrato exibirInfo().
+ * Requisito 6 — Classe abstrata: não pode ser instanciada diretamente.
  */
 public abstract class Pessoa {
 
@@ -45,18 +44,7 @@ public abstract class Pessoa {
         this.idade    = idade;
     }
 
-    // -----------------------------------------------------------------------
-    // Método abstrato — obriga subclasses a fornecer sua própria implementação
-    // -----------------------------------------------------------------------
 
-    /**
-     * Exibe as informações detalhadas da pessoa no console.
-     * Requisito 5 — Polimorfismo: cada subclasse sobrescreve (@Override) este método.
-     * Requisito 6 — Método abstrato da classe abstrata Pessoa.
-     */
-    public abstract void exibirInfo();
-
-    // -----------------------------------------------------------------------
     // Getters e Setters — Requisito 3 (Encapsulamento)
     // -----------------------------------------------------------------------
 
