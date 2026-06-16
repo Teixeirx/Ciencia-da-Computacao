@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafo de Academia - Grau de Separação</title>
+
+<!-- Google Fonts (Outfit) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- D3.js Library -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<style>
+:root {
+    --bg-primary: #07090e;
+    --bg-secondary: #0c101b;
+    --sidebar-bg: rgba(12, 16, 27, 0.85);
+    --card-bg: rgba(22, 29, 49, 0.55);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    
+    --accent-blue: #3b82f6;
+    --accent-blue-glow: rgba(59, 130, 246, 0.45);
+    --accent-purple: #a855f7;
+    --accent-purple-glow: rgba(168, 85, 247, 0.45);
+    --accent-green: #10b981;
+    --accent-green-glow: rgba(16, 185, 129, 0.65);
+    --accent-gold: #fbbf24;
+    --accent-gold-glow: rgba(251, 191, 36, 0.55);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+
+/* App Container Layout */
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 420px;
+    height: 100%;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--card-border);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.logo-icon {
+    width: 28px;
+    height: 28px;
+    fill: var(--accent-blue);
+    filter: drop-shadow(0 0 8px var(--accent-blue-glow));
+}
+
+.logo-area h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Cards */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Result Card Specifics */
+.result-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(22, 29, 49, 0.7) 0%, rgba(37, 99, 235, 0.1) 100%);
+    border-color: rgba(59, 130, 246, 0.25);
+}
+
+.max-degree-value {
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    margin: 8px 0;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.35));
+}
+
+.result-desc {
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+/* Metrics Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.form-select {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.form-select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.card-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    line-height: 1.4;
+}
+
+/* Interactive Result */
+.search-result-area {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.active-result {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: var(--text-main);
+}
+
+.error-result {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--text-main);
+}
+
+.search-path-header {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent-green);
+}
+
+.search-path-dist {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.search-path-nodes {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.text-success { color: var(--accent-green) !important; }
+.text-danger { color: #f87171 !important; }
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 11px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    filter: brightness(1.1);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Path lists */
+.paths-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.path-item {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.path-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateX(4px);
+}
+
+.path-item-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.path-item-nodes {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Main Visualizer Area */
+.main-content {
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
+    background-color: var(--bg-secondary);
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0),
+        radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Graph Header (Legend & Controls overlay) */
+.graph-header {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    right: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.legend {
+    display: flex;
+    gap: 16px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--card-border);
+    border-radius: 30px;
+    padding: 8px 18px;
+    pointer-events: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.exercise-dot {
+    background: linear-gradient(135deg, var(--exercise-start) 0%, var(--exercise-end) 100%);
+    box-shadow: 0 0 8px var(--accent-blue-glow);
+}
+
+.muscle-dot {
+    background: linear-gradient(135deg, var(--muscle-start) 0%, var(--muscle-end) 100%);
+    box-shadow: 0 0 8px var(--accent-purple-glow);
+}
+
+.graph-actions {
+    display: flex;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.btn-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+#graph-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#graph-svg {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#graph-svg:active {
+    cursor: grabbing;
+}
+
+/* D3 Elements Styling */
+.links line {
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-width: 2px;
+    transition: stroke 0.25s, stroke-opacity 0.25s, stroke-width 0.25s;
+}
+
+.nodes circle {
+    stroke: #0c101b;
+    stroke-width: 2px;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease, opacity 0.25s;
+}
+
+text {
+    fill: #f8fafc;
+    font-size: 13px;
+    font-weight: 500;
+    pointer-events: none;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.25s, font-size 0.2s;
+}
+
+/* Hover & Dimm states */
+.nodes circle.dimmed, .links line.dimmed, text.dimmed {
+    opacity: 0.15 !important;
+}
+
+.nodes circle.highlighted {
+    stroke: #fff;
+    stroke-width: 3px;
+    opacity: 1 !important;
+}
+
+.links line.highlighted {
+    stroke: var(--accent-green);
+    stroke-width: 5px;
+    stroke-opacity: 1 !important;
+    stroke-dasharray: 8, 4;
+    animation: dash 0.8s linear infinite;
+    filter: drop-shadow(0 0 6px var(--accent-green-glow));
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: -12;
+    }
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 12px;
+    color: #fff;
+    font-size: 13px;
+    pointer-events: none;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    min-width: 140px;
+}
+
+.tooltip-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.tooltip-type {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.tooltip-type-exercise {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.tooltip-type-muscle {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+}
+
+.tooltip-conn {
+    color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Left Sidebar Panel -->
+    <aside class="sidebar">
+        <div class="header">
+            <div class="logo-area">
+                <svg class="logo-icon" viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4M12,18A2,2 0 0,1 10,16A2,2 0 0,1 12,14A2,2 0 0,1 14,16A2,2 0 0,1 12,18M17,14A2,2 0 0,1 15,12A2,2 0 0,1 17,10A2,2 0 0,1 19,12A2,2 0 0,1 17,14M7,14A2,2 0 0,1 5,12A2,2 0 0,1 7,10A2,2 0 0,1 9,12A2,2 0 0,1 7,14Z"/>
+                </svg>
+                <h2>G-Academia</h2>
+            </div>
+            <p class="subtitle">Análise de Grau de Separação de Exercícios</p>
+        </div>
+
+        <!-- Metric Card: Maximum Degree of Separation -->
+        <div class="card result-card">
+            <h3>Grau Máximo de Separação</h3>
+            <div class="max-degree-value" id="max-degree-display">--</div>
+            <p class="result-desc" id="max-path-desc">Calculando conexões do grafo...</p>
+            <button class="btn btn-primary" id="btn-highlight-max">Destacar Caminho Máximo</button>
+        </div>
+
+        <!-- Metric Card: Graph Statistics -->
+        <div class="card graph-stats">
+            <h3>Métricas do Grafo</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-val" id="stat-nodes">--</span>
+                    <span class="stat-label">Nós</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" id="stat-links">--</span>
+                    <span class="stat-label">Arestas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" id="stat-components">--</span>
+                    <span class="stat-label">Componentes</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Shortest Path Queries -->
+        <div class="card interactive-search">
+            <h3>Consultar Caminho</h3>
+            <p class="card-hint">Escolha dois elementos para mapear o menor caminho e o grau de separação.</p>
+            
+            <div class="form-group">
+                <label for="select-start">Elemento A (Origem)</label>
+                <select id="select-start" class="form-select">
+                    <option value="">Selecione a origem...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="select-end">Elemento B (Destino)</label>
+                <select id="select-end" class="form-select">
+                    <option value="">Selecione o destino...</option>
+                </select>
+            </div>
+
+            <div class="search-result-area" id="search-result-desc">
+                Escolha os nós de origem e destino acima.
+            </div>
+            <button class="btn btn-secondary" id="btn-clear-highlight" style="display: none; margin-top: 12px;">Limpar Destaques</button>
+        </div>
+
+        <!-- Card: Longest paths list per component -->
+        <div class="card component-paths">
+            <h3>Separadores Máximos</h3>
+            <p class="card-hint" style="margin-bottom: 8px;">Caminhos de maior distância dentro de cada componente conexo:</p>
+            <ul class="paths-list" id="max-paths-list">
+                <!-- populated dynamically -->
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Graph Viewer -->
+    <main class="main-content">
+        <!-- Floating overlay header -->
+        <div class="graph-header">
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-dot exercise-dot"></span>
+                    <span>Exercício</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot muscle-dot"></span>
+                    <span>Músculo</span>
+                </div>
+            </div>
+            <div class="graph-actions">
+                <button class="btn-icon" id="btn-reset-zoom" title="Resetar Visualização">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6V9H15V11H12V14H15V16H12V18H10V6H12Z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Node details tooltip -->
+        <div id="tooltip" class="tooltip" style="opacity: 0;"></div>
+
+        <!-- D3 SVG Viewport Container -->
+        <div id="graph-container">
+            <svg id="graph-svg">
+                <defs>
+                    <!-- Visual gradients for nodes -->
+                    <linearGradient id="exercise-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00f2fe" />
+                        <stop offset="100%" stop-color="#4facfe" />
+                    </linearGradient>
+                    <linearGradient id="muscle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#f355da" />
+                        <stop offset="100%" stop-color="#7000ff" />
+                    </linearGradient>
+                    <linearGradient id="highlight-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#10b981" />
+                        <stop offset="100%" stop-color="#059669" />
+                    </linearGradient>
+
+                    <!-- Glow filter for path highlighting -->
+                    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="5" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                    <filter id="glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+            </svg>
+        </div>
+    </main>
+</div>
+
+<script>
+// State Management
+let graph = null;
+let analysis = null;
+let activePath = null;
+let adj = {};
+
+// Selectors for elements
+const container = d3.select("#graph-container");
+const svg = d3.select("#graph-svg");
+const tooltip = d3.select("#tooltip");
+
+// Init variables for D3 components
+let simulation, zoomG, link, node, label;
+
+// Width and height
+let width = container.node().clientWidth;
+let height = container.node().clientHeight;
+
+// Set D3 zoom functionality
+const zoom = d3.zoom()
+    .scaleExtent([0.2, 4])
+    .on("zoom", (event) => {
+        zoomG.attr("transform", event.transform);
+    });
+
+svg.call(zoom);
+
+// Primary Entry Point: Load data from JSON or use Fallback
+async function loadData() {
+    try {
+        const response = await fetch("dados.json");
+        if (!response.ok) throw new Error("Não foi possível carregar dados.json");
+        graph = await response.json();
+        console.log("Dados carregados do dados.json com sucesso!");
+    } catch (err) {
+        console.warn("Usando dados do grafo embutidos de fallback devido a:", err.message);
+        // Fallback matching original data structure
+        graph = {
+            nodes: [
+                {id: "Supino"}, {id: "Agachamento"}, {id: "Puxada Frontal"},
+                {id: "Desenvolvimento"}, {id: "Rosca Direta"}, {id: "Peitoral"},
+                {id: "Triceps"}, {id: "Quadriceps"}, {id: "Gluteos"},
+                {id: "Costas"}, {id: "Ombros"}, {id: "Biceps"}
+            ],
+            links: [
+                {source: "Supino", target: "Peitoral"},
+                {source: "Supino", target: "Triceps"},
+                {source: "Agachamento", target: "Quadriceps"},
+                {source: "Agachamento", target: "Gluteos"},
+                {source: "Puxada Frontal", target: "Costas"},
+                {source: "Puxada Frontal", target: "Biceps"},
+                {source: "Desenvolvimento", target: "Ombros"},
+                {source: "Desenvolvimento", target: "Triceps"},
+                {source: "Rosca Direta", target: "Biceps"}
+            ]
+        };
+    }
+
+    // Build Adjacency List dynamically for graph calculations
+    buildAdjacency();
+
+    // Run BFS Calculations
+    analysis = analyzeGraph(graph.nodes, graph.links);
+
+    // Update UI panels
+    updateUI();
+
+    // Render D3 Graph
+    initializeGraph();
+}
+
+// Build adjacency matrix for graph searches
+function buildAdjacency() {
+    adj = {};
+    graph.nodes.forEach(n => adj[n.id] = []);
+    graph.links.forEach(l => {
+        const u = typeof l.source === 'object' ? l.source.id : l.source;
+        const v = typeof l.target === 'object' ? l.target.id : l.target;
+        if (adj[u] && adj[v]) {
+            adj[u].push(v);
+            adj[v].push(u); // Non-directed
+        }
+    });
+}
+
+// Check dynamic Exercise role vs Target Muscle role
+// Node is an exercise if it is a source of at least one link.
+function isExercise(nodeId) {
+    const exerciseIds = new Set(graph.links.map(l => 
+        typeof l.source === 'object' ? l.source.id : l.source
+    ));
+    return exerciseIds.has(nodeId);
+}
+
+// Compute components and all shortest-paths
+function analyzeGraph(nodes, links) {
+    const visited = {};
+    const components = [];
+
+    // Find Connected Components using simple BFS
+    nodes.forEach(n => {
+        if (!visited[n.id]) {
+            const compNodes = [];
+            const queue = [n.id];
+            visited[n.id] = true;
+
+            while (queue.length > 0) {
+                const curr = queue.shift();
+                compNodes.push(curr);
+
+                adj[curr].forEach(neighbor => {
+                    if (!visited[neighbor]) {
+                        visited[neighbor] = true;
+                        queue.push(neighbor);
+                    }
+                });
+            }
+            components.push(compNodes);
+        }
+    });
+
+    const allPairs = [];
+    
+    // For each component, find all-pairs shortest paths
+    const componentResults = components.map((compNodes, idx) => {
+        let maxDist = 0;
+        let maxPaths = [];
+
+        compNodes.forEach(startId => {
+            const queue = [startId];
+            const dist = { [startId]: 0 };
+            const parent = {};
+
+            while (queue.length > 0) {
+                const curr = queue.shift();
+                const currDist = dist[curr];
+
+                adj[curr].forEach(neighbor => {
+                    if (dist[neighbor] === undefined) {
+                        dist[neighbor] = currDist + 1;
+                        parent[neighbor] = curr;
+                        queue.push(neighbor);
+
+                        const path = [];
+                        let temp = neighbor;
+                        while (temp !== undefined) {
+                            path.unshift(temp);
+                            temp = parent[temp];
+                        }
+
+                        // Save this path
+                        allPairs.push({
+                            from: startId,
+                            to: neighbor,
+                            distance: dist[neighbor],
+                            path: path
+                        });
+
+                        // Log component diameter findings
+                        if (dist[neighbor] > maxDist) {
+                            maxDist = dist[neighbor];
+                            maxPaths = [path];
+                        } else if (dist[neighbor] === maxDist) {
+                            // Deduplicate reverse paths
+                            const isDuplicate = maxPaths.some(p => p[0] === neighbor && p[p.length-1] === startId);
+                            if (!isDuplicate) {
+                                maxPaths.push(path);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Handle single isolated node case
+        if (maxDist === 0 && compNodes.length > 0) {
+            maxPaths = [[compNodes[0]]];
+        }
+
+        return {
+            index: idx + 1,
+            nodes: compNodes,
+            maxDistance: maxDist,
+            maxPaths: maxPaths
+        };
+    });
+
+    // Determine global max separation
+    let globalMaxDistance = 0;
+    let globalMaxPaths = [];
+
+    componentResults.forEach(r => {
+        if (r.maxDistance > globalMaxDistance) {
+            globalMaxDistance = r.maxDistance;
+            globalMaxPaths = r.maxPaths;
+        } else if (r.maxDistance === globalMaxDistance && globalMaxDistance > 0) {
+            globalMaxPaths = globalMaxPaths.concat(r.maxPaths);
+        }
+    });
+
+    return {
+        components: componentResults,
+        globalMaxDistance,
+        globalMaxPaths,
+        allPairs
+    };
+}
+
+// Update UI panel details
+function updateUI() {
+    // Stat counters
+    document.getElementById("stat-nodes").textContent = graph.nodes.length;
+    document.getElementById("stat-links").textContent = graph.links.length;
+    document.getElementById("stat-components").textContent = analysis.components.length;
+
+    // Display maximum degree
+    document.getElementById("max-degree-display").textContent = analysis.globalMaxDistance;
+    
+    if (analysis.globalMaxPaths.length > 0) {
+        const primaryPath = analysis.globalMaxPaths[0];
+        document.getElementById("max-path-desc").innerHTML = `
+            O maior grau de separação é <strong>${analysis.globalMaxDistance}</strong>, ligando 
+            <strong>${primaryPath[0]}</strong> a <strong>${primaryPath[primaryPath.length - 1]}</strong>.
+        `;
+    } else {
+        document.getElementById("max-path-desc").textContent = "Nenhum caminho entre os nós.";
+    }
+
+    // Populate search dropdowns
+    const selectStart = document.getElementById("select-start");
+    const selectEnd = document.getElementById("select-end");
+    
+    // Clear initial options except placeholder
+    selectStart.innerHTML = '<option value="">Selecione a origem...</option>';
+    selectEnd.innerHTML = '<option value="">Selecione o destino...</option>';
+
+    // Alphabetical node sort
+    const sortedNodeIds = graph.nodes.map(n => n.id).sort((a, b) => a.localeCompare(b));
+
+    sortedNodeIds.forEach(id => {
+        const optA = document.createElement("option");
+        optA.value = id;
+        optA.textContent = id;
+        selectStart.appendChild(optA);
+
+        const optB = document.createElement("option");
+        optB.value = id;
+        optB.textContent = id;
+        selectEnd.appendChild(optB);
+    });
+
+    // Populate list of longest paths per component
+    const pathsList = document.getElementById("max-paths-list");
+    pathsList.innerHTML = "";
+
+    analysis.components.forEach(comp => {
+        if (comp.maxDistance > 0) {
+            comp.maxPaths.forEach((path, pIdx) => {
+                const li = document.createElement("li");
+                li.className = "path-item";
+                
+                const startNode = path[0];
+                const endNode = path[path.length - 1];
+
+                li.innerHTML = `
+                    <div class="path-item-header">
+                        <span>Comp. #${comp.index} (Tam. ${comp.nodes.length})</span>
+                        <span class="text-success">Separação: ${comp.maxDistance}</span>
+                    </div>
+                    <div class="path-item-nodes">${startNode} ➔ ${endNode}</div>
+                `;
+
+                // Add hover/click event to highlight
+                li.addEventListener("click", () => {
+                    highlightPath(path);
+                    // Sync dropdowns
+                    selectStart.value = startNode;
+                    selectEnd.value = endNode;
+                    
+                    const desc = document.getElementById("search-result-desc");
+                    desc.innerHTML = `
+                        <div class="search-path-header">Menor Caminho Encontrado!</div>
+                        <div class="search-path-dist">Distância: <strong>${comp.maxDistance}</strong> graus (Max do Componente ${comp.index})</div>
+                        <div class="search-path-nodes">${path.join(" ➔ ")}</div>
+                    `;
+                    desc.className = "search-result-area active-result";
+                });
+
+                pathsList.appendChild(li);
+            });
+        }
+    });
+
+    // Hook events
+    document.getElementById("btn-highlight-max").onclick = () => {
+        if (analysis.globalMaxPaths.length > 0) {
+            // Pick first global max path
+            const p = analysis.globalMaxPaths[0];
+            highlightPath(p);
+            // Sync dropdowns
+            selectStart.value = p[0];
+            selectEnd.value = p[p.length - 1];
+            
+            const desc = document.getElementById("search-result-desc");
+            desc.innerHTML = `
+                <div class="search-path-header">Grau Máximo de Separação</div>
+                <div class="search-path-dist">Distância: <strong>${analysis.globalMaxDistance}</strong> graus de separação</div>
+                <div class="search-path-nodes">${p.join(" ➔ ")}</div>
+            `;
+            desc.className = "search-result-area active-result";
+        }
+    };
+
+    selectStart.onchange = handleSearchChange;
+    selectEnd.onchange = handleSearchChange;
+
+    document.getElementById("btn-clear-highlight").onclick = () => {
+        selectStart.value = "";
+        selectEnd.value = "";
+        handleSearchChange();
+    };
+
+    document.getElementById("btn-reset-zoom").onclick = () => {
+        svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+    };
+}
+
+// Search select input change handler
+function handleSearchChange() {
+    const start = document.getElementById("select-start").value;
+    const end = document.getElementById("select-end").value;
+    const resultDesc = document.getElementById("search-result-desc");
+
+    if (!start || !end) {
+        highlightPath(null);
+        resultDesc.innerHTML = "Escolha os nós de origem e destino acima.";
+        resultDesc.className = "search-result-area";
+        return;
+    }
+
+    if (start === end) {
+        highlightPath([start]);
+        resultDesc.innerHTML = `
+            <div class="search-path-header text-success">Mesmo Elemento</div>
+            <div class="search-path-dist">Distância: <strong>0</strong> graus de separação</div>
+            <div class="search-path-nodes">${start}</div>
+        `;
+        resultDesc.className = "search-result-area active-result";
+        return;
+    }
+
+    // Lookup path
+    const pair = analysis.allPairs.find(p => p.from === start && p.to === end);
+
+    if (pair) {
+        highlightPath(pair.path);
+        resultDesc.innerHTML = `
+            <div class="search-path-header">Menor Caminho Encontrado!</div>
+            <div class="search-path-dist">Distância: <strong>${pair.distance}</strong> ${pair.distance === 1 ? 'grau' : 'graus'} de separação</div>
+            <div class="search-path-nodes">${pair.path.join(" ➔ ")}</div>
+        `;
+        resultDesc.className = "search-result-area active-result";
+    } else {
+        // Disconnected nodes
+        activePath = [start, end];
+        node.classed("dimmed", n => n.id !== start && n.id !== end);
+        label.classed("dimmed", n => n.id !== start && n.id !== end);
+        link.classed("dimmed", true).classed("highlighted", false);
+        d3.select("#btn-clear-highlight").style("display", "inline-block");
+
+        resultDesc.innerHTML = `
+            <div class="search-path-header text-danger">Sem Conexão</div>
+            <div class="search-path-nodes">${start} e ${end} estão desconectados (componentes diferentes).</div>
+        `;
+        resultDesc.className = "search-result-area error-result";
+    }
+}
+
+// Highlight paths visual trigger
+function highlightPath(path) {
+    activePath = path;
+
+    if (!path) {
+        // Reset styles
+        node.classed("dimmed", false).classed("highlighted", false);
+        label.classed("dimmed", false);
+        link.classed("dimmed", false).classed("highlighted", false);
+        d3.selectAll("circle").attr("filter", null);
+        d3.select("#btn-clear-highlight").style("display", "none");
+        return;
+    }
+
+    const pathNodes = new Set(path);
+    const pathEdges = new Set();
+    
+    for (let i = 0; i < path.length - 1; i++) {
+        const u = path[i];
+        const v = path[i+1];
+        pathEdges.add(`${u}-${v}`);
+        pathEdges.add(`${v}-${u}`);
+    }
+
+    // Apply Dimming & Highlighting
+    node.classed("dimmed", n => !pathNodes.has(n.id))
+        .classed("highlighted", n => pathNodes.has(n.id));
+
+    label.classed("dimmed", n => !pathNodes.has(n.id));
+
+    link.classed("dimmed", l => {
+            const u = l.source.id;
+            const v = l.target.id;
+            return !pathEdges.has(`${u}-${v}`);
+        })
+        .classed("highlighted", l => {
+            const u = l.source.id;
+            const v = l.target.id;
+            return pathEdges.has(`${u}-${v}`);
+        });
+
+    // Add filter glow effect to path nodes
+    node.each(function(d) {
+        if (pathNodes.has(d.id)) {
+            d3.select(this).attr("filter", "url(#glow)");
+        } else {
+            d3.select(this).attr("filter", null);
+        }
+    });
+
+    d3.select("#btn-clear-highlight").style("display", "inline-block");
+}
+
+// D3 Force Layout Visualization
+function initializeGraph() {
+    // Clear previous elements
+    svg.selectAll(".zoom-container").remove();
+
+    // Create main scale container
+    zoomG = svg.append("g").attr("class", "zoom-container");
+
+    width = container.node().clientWidth;
+    height = container.node().clientHeight;
+    svg.attr("width", width).attr("height", height);
+
+    // D3 Force Simulator
+    simulation = d3.forceSimulation(graph.nodes)
+        .force("link", d3.forceLink(graph.links).id(d => d.id).distance(140))
+        .force("charge", d3.forceManyBody().strength(-400))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(45));
+
+    // Append links group
+    link = zoomG.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(graph.links)
+        .enter()
+        .append("line");
+
+    // Append nodes group
+    node = zoomG.append("g")
+        .attr("class", "nodes")
+        .selectAll("circle")
+        .data(graph.nodes)
+        .enter()
+        .append("circle")
+        .attr("r", d => isExercise(d.id) ? 22 : 18)
+        .attr("fill", d => isExercise(d.id) ? "url(#exercise-grad)" : "url(#muscle-grad)")
+        .call(
+            d3.drag()
+              .on("start", dragstarted)
+              .on("drag", dragged)
+              .on("end", dragended)
+        );
+
+    // Append text labels group
+    label = zoomG.append("g")
+        .attr("class", "labels")
+        .selectAll("text")
+        .data(graph.nodes)
+        .enter()
+        .append("text")
+        .attr("x", d => isExercise(d.id) ? 27 : 23)
+        .attr("y", 4)
+        .text(d => d.id);
+
+    // Interaction handlers
+    node
+        .on("mouseenter", function(event, d) {
+            d3.select(this).transition().duration(200).attr("r", isExercise(d.id) ? 26 : 22).attr("filter", "url(#glow-strong)");
+            
+            // Show Tooltip
+            tooltip.transition().duration(150).style("opacity", 0.95);
+            const nodeType = isExercise(d.id) ? "exercise" : "muscle";
+            const nodeTypeName = isExercise(d.id) ? "Exercício" : "Músculo Alvo";
+            
+            tooltip.html(`
+                <div class="tooltip-title">${d.id}</div>
+                <div class="tooltip-type tooltip-type-${nodeType}">${nodeTypeName}</div>
+                <div class="tooltip-conn">Grau (Conexões): <strong>${adj[d.id].length}</strong></div>
+            `)
+            .style("left", (event.pageX + 15) + "px")
+            .style("top", (event.pageY - 15) + "px");
+
+            // Temporary hover highlights: dim everything except neighbors
+            if (activePath === null) {
+                const neighbors = new Set(adj[d.id]);
+                neighbors.add(d.id);
+                
+                node.classed("dimmed", n => !neighbors.has(n.id));
+                label.classed("dimmed", n => !neighbors.has(n.id));
+                link.classed("dimmed", l => {
+                    const u = l.source.id;
+                    const v = l.target.id;
+                    return u !== d.id && v !== d.id;
+                });
+            }
+        })
+        .on("mousemove", function(event) {
+            tooltip.style("left", (event.pageX + 15) + "px")
+                   .style("top", (event.pageY - 15) + "px");
+        })
+        .on("mouseleave", function(event, d) {
+            d3.select(this).transition().duration(200).attr("r", isExercise(d.id) ? 22 : 18);
+            if (activePath === null || !activePath.includes(d.id)) {
+                d3.select(this).attr("filter", null);
+            } else {
+                d3.select(this).attr("filter", "url(#glow)");
+            }
+            
+            tooltip.transition().duration(150).style("opacity", 0);
+            
+            // Reset node dim/highlight levels
+            if (activePath === null) {
+                node.classed("dimmed", false);
+                label.classed("dimmed", false);
+                link.classed("dimmed", false);
+            } else {
+                highlightPath(activePath);
+            }
+        });
+
+    // Update positions on Tick
+    simulation.on("tick", () => {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        node
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+
+        label
+            .attr("transform", d => `translate(${d.x}, ${d.y})`);
+    });
+
+    // Handle Window Resizing
+    window.onresize = () => {
+        if (!container.node()) return;
+        width = container.node().clientWidth;
+        height = container.node().clientHeight;
+        svg.attr("width", width).attr("height", height);
+        simulation.force("center", d3.forceCenter(width / 2, height / 2));
+        simulation.alpha(0.3).restart();
+    };
+}
+
+// Drag and drop event handlers
+function dragstarted(event, d) {
+    if (!event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+}
+
+function dragged(event, d) {
+    d.fx = event.x;
+    d.fy = event.y;
+}
+
+function dragended(event, d) {
+    if (!event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+}
+
+// Initialize Application
+loadData();
+
+</script>
+
+</body>
+</html>

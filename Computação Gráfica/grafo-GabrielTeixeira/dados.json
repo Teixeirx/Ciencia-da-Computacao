@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    {"id": "Supino"},
+    {"id": "Agachamento"},
+    {"id": "Puxada Frontal"},
+    {"id": "Desenvolvimento"},
+    {"id": "Rosca Direta"},
+    {"id": "Peitoral"},
+    {"id": "Triceps"},
+    {"id": "Quadriceps"},
+    {"id": "Gluteos"},
+    {"id": "Costas"},
+    {"id": "Ombros"},
+    {"id": "Biceps"}
+  ],
+  "links": [
+    {"source": "Supino", "target": "Peitoral"},
+    {"source": "Supino", "target": "Triceps"},
+    {"source": "Agachamento", "target": "Quadriceps"},
+    {"source": "Agachamento", "target": "Gluteos"},
+    {"source": "Puxada Frontal", "target": "Costas"},
+    {"source": "Puxada Frontal", "target": "Biceps"},
+    {"source": "Desenvolvimento", "target": "Ombros"},
+    {"source": "Desenvolvimento", "target": "Triceps"},
+    {"source": "Rosca Direta", "target": "Biceps"}
+  ]
+}
